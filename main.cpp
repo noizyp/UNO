@@ -100,7 +100,7 @@ void buildDeck(vector<Card*> &deck){
     }*/
     
     //create wild cards
-    for(int y = 10; y < 18; y++){ //FIXME: I am not sure if i made the correct amount or not
+    for(int y = 10; y < 15; y++){ //FIXME: I am not sure if i made the correct amount or not
         int x = RED;
         Card* temp = new WildCard((Color)x, y);
         deck.push_back(temp);
