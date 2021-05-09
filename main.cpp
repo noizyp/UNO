@@ -39,7 +39,7 @@ void renderDiscard(vector<Card*>);/* Renders the top card of the passed discard 
                                      
                                      @param hand A vector containing Card pointers */
 
-void takeTurn(vector<Card*>& deck, vector<Card*>& hand, vector<Card*>& discard, GameState& gameState);
+bool takeTurn(vector<Card*>& deck, vector<Card*>& hand, vector<Card*>& discard, GameState& gameState);
 /* Passed references to the deck, hand, and discard vectors and a reference to 
    the game state. This function will resolve the turn for the current player
    (whose index is stored in the game state). TakeTurn will query the user for
@@ -54,6 +54,7 @@ void takeTurn(vector<Card*>& deck, vector<Card*>& hand, vector<Card*>& discard, 
 int main(){
     srand(time(0));
     const int NUM_PLAYERS = 2;
+    bool doneWithUNO = false;
     GameState gameState(NUM_PLAYERS);
     
     vector<Card*> deck;
@@ -66,8 +67,8 @@ int main(){
     populateHands(deck, hands);
     drawCards(deck, discard, 1);
     
-    while(1 /* TODO: Check for winner (no cards in hand)*/){
-        takeTurn(deck, hands.at(gameState.currentPlayerIndex), discard, gameState);
+    while(doneWithUNO != true) {
+        doneWithUNO = takeTurn(deck, hands.at(gameState.currentPlayerIndex), discard, gameState);
     }
     
     return 0;
@@ -156,7 +157,9 @@ void renderDiscard(vector<Card*> discard){
     }
 }
 
-void takeTurn(vector<Card*> &deck, vector<Card*> &hand, vector<Card*> &discard, GameState &gameState){
+bool takeTurn(vector<Card*> &deck, vector<Card*> &hand, vector<Card*> &discard, GameState &gameState){
+    bool noCardsLeft = false;
+    
     //clearTerminal();
     renderDiscard(discard);
     cout << "Player " << gameState.currentPlayerIndex << "'s turn." << endl;
@@ -182,25 +185,36 @@ void takeTurn(vector<Card*> &deck, vector<Card*> &hand, vector<Card*> &discard, 
         
         
         // Evaluate user input
-        if(input < i){
+        if (input < i) {
             // Play card at index input
             if(hand.at(input)->play(discard.at(discard.size()-1), gameState)){
                 Card* temp;
                 temp = hand.at(input);
                 discard.push_back(temp);
                 hand.erase(hand.begin() + input); // Remove card in hand at position "input"
-            } else {
+                if (hand.size() == 0) {
+                    noCardsLeft = true;
+                }
+                else if (hand.size() == 1) {
+                    cout << "UNO!!!" << endl;
+                }
+            } 
+            else {
                 cout << "Improper choice" << endl;
                 takeTurn(deck, hand, discard, gameState);
-                return;
+                return false;
             }
-        }else if(input == i){
+        }
+        else if (input == i) {
             drawCards(deck, hand, 1);
         }
-    }else{
+    }
+    else {
         gameState.skipTurn = false;
     }
     
     // update variables for next turn
     gameState.nextTurn();
+    
+    return noCardsLeft;
 }
