@@ -1,0 +1,26 @@
+ bool play(Card*, GameState&);
+};
+
+class SkipCard : public Card{
+  public:
+  
+  SkipCard(Color c, int n);
+  
+  string render(int) const;
+  
+  bool play(Card*, GameState&);
+    
+};
+
+
+class Draw2Card : public Card{
+    public:
+   
+    Draw2Card(Color c);
+    
+    string render(int) const;
+    
+    bool play(Card*, GameState&);
+};
+
+#endif
